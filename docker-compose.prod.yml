@@ -37,6 +37,11 @@ services:
       PAPERLESS_DBUSER: DOCKER-SECRET->paperless_dbuser
       PAPERLESS_DBPASS: DOCKER-SECRET->paperless_dbpassword
       ENV_SECRETS_DEBUG: 1
+      PAPERLESS_URL: https://paperless.app.levell.ch
+      PAPERLESS_CSRF_TRUSTED_ORIGINS: https://*.app.levell.ch
+      PAPERLESS_CORS_ALLOWED_HOSTS: https://paperless.app.levell.ch
+      PAPERLESS_TIME_ZONE: Europe/Zurich
+
     deploy:
       replicas: 1
       update_config:
