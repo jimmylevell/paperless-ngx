@@ -15,7 +15,7 @@ services:
         condition: on-failure
 
   webserver:
-    image: ghcr.io/jimmylevell/paperless-ngx/paperless:latest
+    image: ghcr.io/jimmylevell/paperless-ngx/levell_paperless:latest
     depends_on:
       - broker
     networks:
