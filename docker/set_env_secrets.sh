@@ -22,6 +22,8 @@ env_secret_expand() {
         env_secret_debug "Secret file for $var: $secret"
         if [ -f "$secret" ]; then
             val=$(cat "${secret}")
+            # Write to s6-overlay's container environment directory so it propagates to all services
+            printf "%s" "$val" > "/var/run/s6/container_environment/$var"
             export "$var"="$val"
             env_secret_debug "Expanded variable: $var=$val"
         else
