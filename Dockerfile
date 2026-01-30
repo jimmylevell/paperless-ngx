@@ -25,10 +25,5 @@ RUN dos2unix /docker/entrypoint.sh
 RUN chmod +x /docker/set_env_secrets.sh
 RUN dos2unix /docker/set_env_secrets.sh
 
-# Use cont-init.d to run the secrets script early in the init process
-# This runs BEFORE any s6 services start, ensuring env vars are available
-RUN mkdir -p /etc/cont-init.d && \
-    ln -sf /docker/set_env_secrets.sh /etc/cont-init.d/00-secrets.sh
-
 EXPOSE 8080
-ENTRYPOINT ["/init"]
+ENTRYPOINT ["/docker/entrypoint.sh"]
