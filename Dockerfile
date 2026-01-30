@@ -25,19 +25,10 @@ RUN dos2unix /docker/entrypoint.sh
 RUN chmod +x /docker/set_env_secrets.sh
 RUN dos2unix /docker/set_env_secrets.sh
 
-# Create s6-overlay init script to run secrets expansion very early
-# This needs to run in the init phase before any services start
-RUN mkdir -p /etc/s6-overlay/s6-rc.d/init-secrets && \
-    echo "oneshot" > /etc/s6-overlay/s6-rc.d/init-secrets/type && \
-    printf '#!/bin/bash\nexec /docker/set_env_secrets.sh' > /etc/s6-overlay/s6-rc.d/init-secrets/up && \
-    chmod +x /etc/s6-overlay/s6-rc.d/init-secrets/up && \
-    mkdir -p /etc/s6-overlay/s6-rc.d/user/contents.d && \
-    touch /etc/s6-overlay/s6-rc.d/user/contents.d/init-secrets
-
-# Ensure init-secrets runs before init-migrations (paperless service)
-RUN if [ -d /etc/s6-overlay/s6-rc.d/init-migrations ]; then \
-    echo "init-secrets" > /etc/s6-overlay/s6-rc.d/init-migrations/dependencies.d/init-secrets; \
-    fi
+# Use cont-init.d to run the secrets script early in the init process
+# This runs BEFORE any s6 services start, ensuring env vars are available
+RUN mkdir -p /etc/cont-init.d && \
+    ln -sf /docker/set_env_secrets.sh /etc/cont-init.d/00-secrets.sh
 
 EXPOSE 8080
 ENTRYPOINT ["/init"]
