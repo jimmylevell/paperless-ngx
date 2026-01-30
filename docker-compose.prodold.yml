@@ -1,0 +1,70 @@
+version: '3.9'
+services:
+  broker:
+    image: docker.io/library/redis:8
+    volumes:
+      - /srv/docker/paperless/redis:/data
+    networks:
+      - levell
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+
+  webserver:
+    image: ghcr.io/jimmylevell/paperless-ngx/paperless:latest
+    depends_on:
+      - broker
+    networks:
+      - levell
+      - traefik-public
+    volumes:
+      - /srv/docker/paperless/data:/usr/src/paperless/data
+      - /srv/docker/paperless/media:/usr/src/paperless/media
+      - /srv/docker/paperless/export:/usr/src/paperless/export
+      - /srv/docker/paperless/consume:/usr/src/paperless/consume
+    secrets:
+      - paperless_dbpassword
+      - paperless_dbuser
+    environment:
+      COMPOSE_PROJECT_NAME: paperless
+      PAPERLESS_REDIS: redis://broker:6379
+      PAPERLESS_DBHOST: levell-db
+      PAPERLESS_DBNAME: paperless-ngx
+      PAPERLESS_DBUSER: DOCKER-SECRET->paperless_dbuser
+      PAPERLESS_DBPASS: DOCKER-SECRET->paperless_dbpassword
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+      labels:
+      - traefik.enable=true # enable traefik
+      - traefik.docker.network=traefik-public # put it in the same network as traefik
+      - traefik.constraint-label=traefik-public # assign the same label as traefik so it can be discovered
+      - traefik.http.routers.levellpaperless.rule=Host(`paperless.app.levell.ch`) # listen to port 80 for request to APP_DOMAIN (use together with the line below)
+      - traefik.http.routers.levellpaperless.entrypoints=http
+      - traefik.http.routers.levellpaperless.middlewares=https-redirect
+      - traefik.http.middlewares.levellpaperless.redirectscheme.scheme=https # redirect traffic to https
+      - traefik.http.middlewares.levellpaperless.redirectscheme.permanent=true # redirect traffic to https
+      - traefik.http.routers.levellpaperless-secured.rule=Host(`paperless.app.levell.ch`) # listen to port 443 for request to APP_DOMAIN (use together with the line below)
+      - traefik.http.routers.levellpaperless-secured.entrypoints=https
+      - traefik.http.routers.levellpaperless-secured.tls.certresolver=le # use the Let's Encrypt certificate we set up earlier
+      - traefik.http.services.levellpaperless-secured.loadbalancer.server.port=8080 # ask Traefik to search for port service container
+
+networks:
+  traefik-public:
+    external: true
+  levell:
+    external: true
+
+secrets:
+  paperless_dbuser:
+    external: true
+  paperless_dbpassword:
+    external: true
