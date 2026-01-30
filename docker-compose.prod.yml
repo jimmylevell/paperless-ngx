@@ -36,6 +36,7 @@ services:
       PAPERLESS_DBNAME: paperless-ngx
       PAPERLESS_DBUSER: DOCKER-SECRET->paperless_dbuser
       PAPERLESS_DBPASS: DOCKER-SECRET->paperless_dbpassword
+      ENV_SECRETS_DEBUG: 1
     deploy:
       replicas: 1
       update_config:
