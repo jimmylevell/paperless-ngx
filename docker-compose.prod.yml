@@ -56,7 +56,7 @@ services:
       - traefik.http.routers.levellpaperless-secured.rule=Host(`paperless.app.levell.ch`) # listen to port 443 for request to APP_DOMAIN (use together with the line below)
       - traefik.http.routers.levellpaperless-secured.entrypoints=https
       - traefik.http.routers.levellpaperless-secured.tls.certresolver=le # use the Let's Encrypt certificate we set up earlier
-      - traefik.http.services.levellpaperless-secured.loadbalancer.server.port=8080 # ask Traefik to search for port service container
+      - traefik.http.services.levellpaperless-secured.loadbalancer.server.port=8000 # ask Traefik to search for port service container
 
 networks:
   traefik-public:

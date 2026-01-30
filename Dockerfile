@@ -25,5 +25,5 @@ RUN dos2unix /docker/entrypoint.sh
 RUN chmod +x /docker/set_env_secrets.sh
 RUN dos2unix /docker/set_env_secrets.sh
 
-EXPOSE 8080
+EXPOSE 8000
 ENTRYPOINT ["/docker/entrypoint.sh"]
