@@ -32,7 +32,7 @@ services:
     environment:
       COMPOSE_PROJECT_NAME: paperless
       PAPERLESS_REDIS: redis://broker:6379
-      PAPERLESS_DBHOST: levell-db
+      PAPERLESS_DBHOST: levell-postgres
       PAPERLESS_DBNAME: paperless-ngx
       PAPERLESS_DBUSER: DOCKER-SECRET->paperless_dbuser
       PAPERLESS_DBPASS: DOCKER-SECRET->paperless_dbpassword
