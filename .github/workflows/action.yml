@@ -39,7 +39,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       -
         name: Build and push levell paperless docker
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           push: true
           target: levell-paperless-deploy
@@ -47,7 +47,7 @@ jobs:
             ghcr.io/jimmylevell/paperless-ngx/levell_paperless:latest
       -
         name: Build and push levell paperless docker
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           push: true
           target: levell-paperless-deploy
